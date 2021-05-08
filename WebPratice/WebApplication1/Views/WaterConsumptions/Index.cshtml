@@ -1,7 +1,8 @@
 ﻿@{
     ViewData["Title"] = "WaterConsumption";
 }
-@model IEnumerable<ConsoleApp1.Model.WaterConsumption>
+@*model IEnumerable<ConsoleApp1.Model.WaterConsumption>*@
+@model PagedList<ConsoleApp1.Model.WaterConsumption>
 
 <style>
 
@@ -17,7 +18,7 @@
 
 <a href="/WaterConsumptions/Create">新增</a>
 
-<form action="/WaterConsumptions/SearchUnit" method="post">
+<form action="/WaterConsumptions/SearchUnit" method="get">
 
     <label>請輸入縣市別:</label><br>
 
@@ -39,26 +40,42 @@
     </thead>
     <tbody>
 
-    @if (Model != null)
-    {
-        @foreach (ConsoleApp1.Model.WaterConsumption w in Model)
+        @if (Model != null)
         {
-            <tr>
-                <td>@w.consumptionOfWater</td>
-                <td>@w.executingUnit</td>
-                <td>@w.populationServed</td>
-                <td>@w.theDailyDomesticConsumptionOfWaterPerPerson</td>
-                <td>@w.year</td>
-                <td>@w.remarks</td>
-                <td>
-                    <a href="/WaterConsumptions/Edit/@w.Id">Edit</a> |
-                    <a id="delBtn" href="/WaterConsumptions/Delete/@w.Id">Delete</a>
-                </td>
-            </tr>
+            @foreach (ConsoleApp1.Model.WaterConsumption w in Model)
+            {
+                <tr>
+                    <td>@w.consumptionOfWater</td>
+                    <td>@w.executingUnit</td>
+                    <td>@w.populationServed</td>
+                    <td>@w.theDailyDomesticConsumptionOfWaterPerPerson</td>
+                    <td>@w.year</td>
+                    <td>@w.remarks</td>
+                    <td>
+                        <a href="/WaterConsumptions/Edit/@w.Id">Edit</a> |
+                        <a id="delBtn" href="/WaterConsumptions/Delete/@w.Id">Delete</a>
+                    </td>
+                </tr>
+            }
         }
-    }
     </tbody>
 </table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-route-unitName="@Context.Request.Query["unitName"]"
+   asp-route-page="@(Model.PageIndex - 1)"
+   class="btn btn-default @prevDisabled">
+   Previous
+</a>
+<a asp-route-unitName="@Context.Request.Query["unitName"]"
+   asp-route-page="@(Model.PageIndex + 1)"
+   class="btn btn-default @nextDisabled">
+   Next
+</a>
 
 @section Scripts {
     <script type="text/javascript">

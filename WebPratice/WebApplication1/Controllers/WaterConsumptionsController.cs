@@ -13,15 +13,17 @@ namespace WebApplication1.Controllers
     public class WaterConsumptionsController : Controller
     {
         private ApplicationDbContext _context;
+        private int page_size = 10;
 
         public WaterConsumptionsController(ApplicationDbContext context)
         {
             this._context = context;
         }
+
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index(int? page)
         {
-            return SearchUnit("");
+            return await SearchUnitAsync("", page);
         }
 
         [HttpGet("Import")]
@@ -50,18 +52,32 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost("SearchUnit")]
-        public IActionResult SearchUnit(string unitName)
+        public async Task<IActionResult> SearchUnitAsync(string unitName, int? page)
         {
             var query = _context.waterConsumptions.AsQueryable();
             
             if (!String.IsNullOrEmpty(unitName))
             {
                 query = query.Where(e => e.executingUnit == unitName);
+                page = 1;
             }
             query = query.OrderByDescending(x => x.Id);
-            //var results = query.Take(10);
+            
+            return View("Index", await PagedList<WaterConsumption>.CreateAsync(query, page ?? 1, page_size));
+        }
 
-            return View("Index", query.ToList());
+        [HttpGet("SearchUnit")]
+        public async Task<IActionResult> SearchUnit(string unitName, int? page)
+        {
+            var query = _context.waterConsumptions.AsQueryable();
+
+            if (!String.IsNullOrEmpty(unitName))
+            {
+                query = query.Where(e => e.executingUnit == unitName);
+            }
+            query = query.OrderByDescending(x => x.Id);
+
+            return View("Index", await PagedList<WaterConsumption>.CreateAsync(query, page ?? 1, page_size));
         }
 
         [HttpGet("Create")]
