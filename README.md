@@ -16,3 +16,5 @@
 功能包括
 - 新增、刪除餐點
 - 計算花費金額
+
+!!注意：請使用Visual Studio Code的Live Server擴充插件，不要直接打開HTML
